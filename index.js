@@ -11,43 +11,55 @@ const users = [
   { id: 10, name: "Padmé Amidala", age: 27 },
 ];
 
-const brokenUsers = [
-  { id: 1, age: 23 }, // missing name
-  { id: 2, name: "Darth Vader", age: 45 },
-  { id: 3, age: 23 }, // missing name
+const broken = [
+  { id: 1, name: "Billy", age: 19 },
+  { id: 2, age: 45 },
+  { id: 3 },
+  { id: 4, name: "Mr. Cheez", age: 65 },
+  { id: 5, name: "Blawg", age: 0 },
+  { id: 6, name: "", age: 67 },
 ];
 
-function renderList(array, elementId, ageThreshold = null, errorDivId = "error-messages") {
-  const listElement = document.getElementById(elementId);
-  const errorsDiv = document.getElementById(errorDivId);
+const errorElement = document.getElementById("error-messages");
+const errorHandling = document.getElementById("error-handling-list");
 
-  if (listElement) listElement.innerHTML = "";
-  if (errorsDiv) errorsDiv.innerHTML = "";
+function renderList(array, elementId) {
+  const listEl = document.getElementById(elementId);
+  if (!listEl) return;
 
-  array.forEach(obj => {
-    if (!obj.name || obj.name.trim() === "") {
-      const errorMsg = `Error!!!!!!\nThe object: ${JSON.stringify(obj, null, 2)}\n` +
+  listEl.innerHTML = "";
+
+  array.forEach((user) => {
+    const li = document.createElement("li");
+    li.textContent = user.name;
+    listEl.appendChild(li);
+  });
+}
+
+function namesList(arrayName, listElement, errorDiv = errorElement) {
+  listElement.innerHTML = "";
+  if (errorDiv) errorDiv.innerHTML = "";
+
+  arrayName.forEach((object) => {
+    if (!object.name) {
+      let errorMessage =
+        `Error!!!!!! \nThe object: ${JSON.stringify(object, null, 2)} \n` +
         `is missing a "name" property!!!!`;
-      console.error(errorMsg);
 
-      if (errorsDiv) {
-        const li = document.createElement("li");
-        li.id = "failed-objects";
-        li.textContent = errorMsg;
-        errorsDiv.appendChild(li);
-      }
-      return;
-    }
+      console.error(errorMessage);
 
-    if (ageThreshold === null || obj.age < ageThreshold) {
-      console.log(obj.name);
-      const li = document.createElement("li");
-      li.id = "passed-objects";
-      li.textContent = obj.name;
-      listElement.appendChild(li);
+      const errorInfo = document.createElement("li");
+      errorInfo.id = "failed-objects";
+      errorInfo.textContent = errorMessage;
+      listElement.append(errorInfo);
+    } else {
+      const item = document.createElement("li");
+      item.id = "passed-objects";
+      item.textContent = object.name;
+      listElement.append(item);
     }
   });
 }
 
-renderList(users, "names-list");                     // Exercise 1
-renderList(brokenUsers, "error-handling-list");      // Exercise 5
+namesList(broken, errorHandling, errorElement);
+renderList(users, "names-list"); 
